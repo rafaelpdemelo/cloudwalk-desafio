@@ -43,7 +43,7 @@ spec:
       
       containers:
       - name: frontend
-        image: rafaelpdemelo/desafiofilesharing-frontend:latest
+        image: rafaelpdemelo/desafiofilesharing:frontend-security-v2
         imagePullPolicy: Always  # Pull do DockerHub
         
         # Security Context no nível do Container

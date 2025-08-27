@@ -12,6 +12,7 @@ const uploadController = require('./controllers/uploadController');
 const downloadController = require('./controllers/downloadController');
 const { errorHandler } = require('./middleware/errorHandler');
 const { validateRequest } = require('./middleware/validation');
+const { preventPathTraversal } = require('./middleware/pathValidation');
 
 const app = express();
 
@@ -62,15 +63,25 @@ try {
   console.warn('Não foi possível configurar logs em arquivo:', error.message);
 }
 
-// Rate limiting
+// Rate limiting mais rigoroso
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // máximo 100 requests por IP a cada 15 minutos
+  max: 50, // REDUZIR de 100 para 50 requests por IP
   message: {
     error: 'Muitas tentativas. Tente novamente em 15 minutos.'
   },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skipSuccessfulRequests: false
+});
+
+// Rate limiting específico para endpoints sensíveis
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10, // Apenas 10 tentativas de auth por 15 min
+  message: {
+    error: 'Muitas tentativas de autenticação. Aguarde 15 minutos.'
+  }
 });
 
 // Slow down para uploads
@@ -112,6 +123,9 @@ app.use(compression());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
+// Aplicar proteção contra path traversal ANTES das rotas
+app.use(preventPathTraversal);
+
 // Aplicar rate limiting
 app.use('/api/', limiter);
 app.use('/api/upload', uploadLimiter);
@@ -138,7 +152,7 @@ app.get('/health', (req, res) => {
 // Rotas da API
 app.post('/api/upload', uploadController.uploadFile.bind(uploadController));
 app.get('/api/download/:token', downloadController.getFileInfo);
-app.post('/api/download/:token', downloadController.downloadFile);
+app.post('/api/download/:token', authLimiter, downloadController.downloadFile);
 
 // Middleware de tratamento de erros
 app.use(expressWinston.errorLogger({

@@ -45,7 +45,7 @@ spec:
 
       containers:
       - name: backend
-        image: rafaelpdemelo/desafiofilesharing-backend:latest
+        image: rafaelpdemelo/desafiofilesharing:backend-security-v2
         imagePullPolicy: Always  # Pull do DockerHub
         
         # Security Context no nível do Container
