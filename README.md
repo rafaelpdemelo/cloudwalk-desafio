@@ -49,6 +49,32 @@ Aplicação segura de compartilhamento de arquivos com criptografia end-to-end, 
 - **🌐 URL**: https://github.com/rafaelpdemelo/cloudwalk-desafio
 - **🔄 GitOps**: ArgoCD sincronizado automaticamente
 
+### 🔐 Configuração para Repositório Privado:
+
+Se o repositório for **privado**, você precisa configurar um GitHub Personal Access Token para o ArgoCD:
+
+1. **Criar Token no GitHub:**
+   - Acesse: Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Crie um novo token com permissões: `repo`, `read:user`, `user:email`
+
+2. **Configurar ArgoCD:**
+   ```bash
+   # Editar o arquivo de secret com seu token
+   cp argocd/repo-secret-template.yaml argocd/repo-secret.yaml
+   # Substitua <YOUR_GITHUB_TOKEN> pelo token real no arquivo
+   
+   # Aplicar configuração
+   kubectl apply -f argocd/repo-secret.yaml
+   kubectl delete application file-sharing-app -n argocd
+   kubectl apply -f argocd/application.yaml
+   ```
+
+3. **Verificar sincronização:**
+   ```bash
+   kubectl get applications -n argocd
+   # Status deve mostrar: Synced + Healthy
+   ```
+
 ### 🧹 Limpeza:
 
 ```bash
