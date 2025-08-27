@@ -73,7 +73,7 @@ class UploadController {
         }
 
         try {
-          await self.processFileUpload(req.file, password, ttl, res, next);
+          await self.processFileUpload(req.file, password, ttl, req, res, next);
         } catch (error) {
           logger.error('Erro no processamento do arquivo:', error);
           return next(new AppError('Erro interno no processamento', 500));
@@ -88,7 +88,7 @@ class UploadController {
   /**
    * Processa o arquivo após upload
    */
-  async processFileUpload(file, password, ttl, res, next) {
+  async processFileUpload(file, password, ttl, req, res, next) {
     const token = encryptionService.generateToken();
     const sanitizedFilename = sanitize(file.originalname);
     const tempFilePath = path.join(config.paths.temp, `temp_${token}`);
