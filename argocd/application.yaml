@@ -11,33 +11,23 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/cloudwalk/file-sharing-app.git  # Substitua pela URL real do seu repo
+    repoURL: https://github.com/rafaelpdemelo/cloudwalk-desafio.git
     targetRevision: HEAD
     path: k8s
-    
-    # Plugin do Helm ou Kustomize (se necessário)
-    # helm:
-    #   valueFiles:
-    #   - values.yaml
   
   destination:
     server: https://kubernetes.default.svc
     namespace: file-sharing
-  
+    
   syncPolicy:
-    # Sync automático
     automated:
       prune: true
       selfHeal: true
-      allowEmpty: false
-    
-    # Opções de sync
     syncOptions:
-    - CreateNamespace=true
-    - PrunePropagationPolicy=foreground
-    - PruneLast=true
-    - ApplyOutOfSyncOnly=true
-    
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
     retry:
       limit: 5
       backoff:
