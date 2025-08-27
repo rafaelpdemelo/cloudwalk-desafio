@@ -7,7 +7,7 @@ module.exports = {
   
   // Configurações de upload
   upload: {
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024, // 50MB
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 100 * 1024 * 1024, // 100MB
     allowedMimeTypes: [
       'image/jpeg',
       'image/png',
