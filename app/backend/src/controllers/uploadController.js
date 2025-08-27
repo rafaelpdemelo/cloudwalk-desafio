@@ -42,12 +42,14 @@ class UploadController {
    * Processa o upload de um arquivo
    */
   async uploadFile(req, res, next) {
+    const self = this; // Preservar referência do this
+    
     try {
       // Usar multer para processar o upload
       upload(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
           if (err.code === 'LIMIT_FILE_SIZE') {
-            return next(new AppError('Arquivo muito grande. Máximo: 50MB', 400));
+            return next(new AppError('Arquivo muito grande. Máximo: 100MB', 400));
           }
           return next(new AppError(`Erro no upload: ${err.message}`, 400));
         } else if (err) {
@@ -71,7 +73,7 @@ class UploadController {
         }
 
         try {
-          await this.processFileUpload(req.file, password, ttl, res, next);
+          await self.processFileUpload(req.file, password, ttl, res, next);
         } catch (error) {
           logger.error('Erro no processamento do arquivo:', error);
           return next(new AppError('Erro interno no processamento', 500));

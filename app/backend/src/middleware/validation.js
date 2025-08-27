@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { AppError } = require('./errorHandler');
+const config = require('../config/config');
 
 /**
  * Middleware de validação usando Joi

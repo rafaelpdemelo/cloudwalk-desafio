@@ -15,7 +15,18 @@ const { validateRequest } = require('./middleware/validation');
 
 const app = express();
 
+// Configurar trust proxy para rate limiting funcionar corretamente
+app.set('trust proxy', true);
+
 // Configuração de logging
+const fs = require('fs');
+const logsDir = '/app/logs';
+
+// Criar diretório de logs se não existir
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
+
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -25,13 +36,31 @@ const logger = winston.createLogger({
   ),
   defaultMeta: { service: 'file-sharing-api' },
   transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
     new winston.transports.Console({
-      format: winston.format.simple()
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
     })
   ]
 });
+
+// Adicionar transports de arquivo apenas se o diretório for writable
+try {
+  logger.add(new winston.transports.File({ 
+    filename: `${logsDir}/error.log`, 
+    level: 'error',
+    maxsize: 5242880, // 5MB
+    maxFiles: 5
+  }));
+  logger.add(new winston.transports.File({ 
+    filename: `${logsDir}/combined.log`,
+    maxsize: 5242880, // 5MB
+    maxFiles: 5
+  }));
+} catch (error) {
+  console.warn('Não foi possível configurar logs em arquivo:', error.message);
+}
 
 // Rate limiting
 const limiter = rateLimit({
