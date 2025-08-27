@@ -18,10 +18,11 @@ RUN npm ci --omit=dev && \
 # Copiando código da aplicação
 COPY src/ ./src/
 
-# Criando diretório para uploads com permissões seguras
-RUN mkdir -p /app/uploads && \
+# Criando diretórios necessários com permissões seguras
+RUN mkdir -p /app/uploads /app/logs && \
     chown -R nextjs:nodejs /app && \
-    chmod -R 755 /app
+    chmod -R 755 /app && \
+    chmod 775 /app/uploads /app/logs
 
 # Removendo ferramentas desnecessárias para reduzir superfície de ataque
 RUN apk del --purge

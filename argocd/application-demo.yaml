@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: file-sharing-demo
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: file-sharing-demo
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  # Usar repositório local ou público para demonstração
+  source:
+    path: .
+    repoURL: https://raw.githubusercontent.com/argoproj/argocd-example-apps/master/guestbook
+    targetRevision: HEAD
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: file-sharing
+    
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+  
+  # Configuração para demonstração
+  info:
+  - name: Demo
+    value: "Aplicação de demonstração GitOps"
+  
+  revisionHistoryLimit: 5

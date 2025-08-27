@@ -42,6 +42,25 @@ spec:
           type: RuntimeDefault
         supplementalGroups: [1001]
       
+      # InitContainer para configurar permissões dos volumes
+      initContainers:
+      - name: setup-permissions
+        image: alpine:latest
+        command: ['sh', '-c']
+        args:
+        - |
+          echo "Configurando permissões dos volumes..."
+          chown -R 1001:1001 /app/uploads /app/logs
+          chmod -R 775 /app/uploads /app/logs
+          echo "Permissões configuradas com sucesso"
+        securityContext:
+          runAsUser: 0  # Precisa ser root para alterar permissões
+        volumeMounts:
+        - name: uploads-storage
+          mountPath: /app/uploads
+        - name: logs-storage
+          mountPath: /app/logs
+      
       containers:
       - name: backend
         image: rafaelpdemelo/desafiofilesharing-backend:latest
