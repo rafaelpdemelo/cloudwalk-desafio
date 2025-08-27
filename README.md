@@ -51,26 +51,26 @@ Esta aplicação foi desenvolvida como resposta ao desafio técnico da CloudWalk
 graph TB
     subgraph "Kubernetes Cluster"
         subgraph "Ingress Layer"
-            ING[Nginx Ingress<br/>TLS Termination]
+            ING["Nginx Ingress<br/>TLS Termination"]
         end
         
         subgraph "Application Layer"
-            FE[Frontend Pod<br/>React + Nginx]
-            BE[Backend Pod<br/>Node.js API]
-            PX[Proxy Pod<br/>Nginx + Security Headers]
+            FE["Frontend Pod<br/>React + Nginx"]
+            BE["Backend Pod<br/>Node.js API"]
+            PX["Proxy Pod<br/>Nginx + Security Headers"]
         end
         
         subgraph "Storage Layer"
-            PV[EmptyDir<br/>Encrypted Files<br/>(Demo Storage)]
+            PV["EmptyDir<br/>Encrypted Files<br/>(Demo Storage)"]
         end
         
         subgraph "GitOps Layer"
-            ARGO[ArgoCD<br/>Deployment Controller]
-            REPO[GitHub Repository<br/>Source of Truth]
+            ARGO["ArgoCD<br/>Deployment Controller"]
+            REPO["GitHub Repository<br/>Source of Truth"]
         end
     end
     
-    USER[👤 User] --> ING
+    USER["👤 User"] --> ING
     ING --> FE
     FE --> PX
     PX --> BE
