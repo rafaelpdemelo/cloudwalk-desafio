@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-sharing-frontend
+  namespace: file-sharing
+  labels:
+    app: file-sharing-frontend
+    app.kubernetes.io/name: file-sharing
+    app.kubernetes.io/component: frontend
+  annotations:
+    description: "Serviço para o frontend da aplicação de compartilhamento de arquivos"
+spec:
+  type: ClusterIP
+  selector:
+    app: file-sharing-frontend
+  ports:
+  - name: http
+    port: 3001
+    targetPort: http
+    protocol: TCP
+  sessionAffinity: None
