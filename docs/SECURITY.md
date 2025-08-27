@@ -9,7 +9,6 @@ Este documento detalha todas as medidas de segurança implementadas na aplicaç�
 - **OWASP Top 10** - Proteção contra principais vulnerabilidades web
 - **NIST Cybersecurity Framework** - Gestão abrangente de riscos
 - **CIS Kubernetes Benchmark** - Hardening de containers e orquestração
-- **SANS Top 25** - Mitigação de vulnerabilidades críticas
 
 ## 🔐 Threat Model
 
@@ -22,8 +21,6 @@ Este documento detalha todas as medidas de segurança implementadas na aplicaç�
 ### Threat Actors
 - **Atacantes externos** - Hackers tentando acesso não autorizado
 - **Usuários maliciosos** - Abuso das funcionalidades da aplicação
-- **Insiders** - Funcionários com acesso privilegiado
-- **Bots automatizados** - Scripts de ataque automatizado
 
 ### Attack Vectors
 - **Web Application** - Injeção, XSS, CSRF
@@ -399,34 +396,6 @@ describe('Security Tests', () => {
 });
 ```
 
-### Penetration Testing Checklist
-
-- [ ] **OWASP Top 10 Testing**
-  - [ ] Injection attacks (SQL, NoSQL, LDAP)
-  - [ ] Broken authentication
-  - [ ] Sensitive data exposure
-  - [ ] XML external entities (XXE)
-  - [ ] Broken access control
-  - [ ] Security misconfiguration
-  - [ ] Cross-site scripting (XSS)
-  - [ ] Insecure deserialization
-  - [ ] Known vulnerabilities
-  - [ ] Insufficient logging & monitoring
-
-- [ ] **Container Security Testing**
-  - [ ] Image vulnerability scanning
-  - [ ] Container escape attempts
-  - [ ] Privilege escalation
-  - [ ] Resource exhaustion
-  - [ ] Network segmentation
-
-- [ ] **Kubernetes Security Testing**
-  - [ ] RBAC bypass attempts
-  - [ ] Pod security policy violations
-  - [ ] Network policy bypass
-  - [ ] Secrets exposure
-  - [ ] API server security
-
 ## 📊 Security Compliance
 
 ### Compliance Requirements Met
@@ -470,62 +439,3 @@ describe('Security Tests', () => {
   "correlation_id": "req-12345-upload"
 }
 ```
-
-## 🔮 Future Security Enhancements
-
-### Planned Improvements
-
-1. **Advanced Threat Protection**
-   - [ ] Machine learning-based anomaly detection
-   - [ ] Behavioral analysis for users
-   - [ ] Advanced persistent threat (APT) detection
-   - [ ] Zero-day exploit protection
-
-2. **Enhanced Authentication**
-   - [ ] Multi-factor authentication (MFA)
-   - [ ] OAuth 2.0 / OpenID Connect integration
-   - [ ] Biometric authentication support
-   - [ ] Hardware security keys (FIDO2/WebAuthn)
-
-3. **Advanced Encryption**
-   - [ ] Key Management Service (KMS) integration
-   - [ ] Hardware Security Module (HSM) support
-   - [ ] Quantum-resistant encryption algorithms
-   - [ ] Perfect forward secrecy
-
-4. **Compliance & Governance**
-   - [ ] GDPR compliance features
-   - [ ] SOC 2 Type II certification
-   - [ ] ISO 27001 alignment
-   - [ ] HIPAA compliance for healthcare
-
-5. **Security Automation**
-   - [ ] Automated incident response
-   - [ ] Security orchestration platform
-   - [ ] Threat intelligence integration
-   - [ ] Automated remediation
-
-## 📞 Security Incident Response
-
-### Incident Response Team
-- **Security Lead**: Rafael Pereira de Melo
-- **DevOps Engineer**: Rafael Pereira de Melo
-- **Platform Engineer**: Rafael Pereira de Melo
-
-### Incident Escalation Matrix
-
-| Severity | Response Time | Escalation |
-|----------|---------------|------------|
-| **P0 - Critical** | 15 minutes | Immediate |
-| **P1 - High** | 1 hour | Within 2 hours |
-| **P2 - Medium** | 4 hours | Within 8 hours |
-| **P3 - Low** | 24 hours | Within 48 hours |
-
-### Emergency Contacts
-- **Security Hotline**: +55 11 99999-9999
-- **Email**: security@cloudwalk-challenge.com
-- **Slack**: #security-incidents
-
----
-
-> **📝 Nota**: Esta documentação de segurança deve ser revisada mensalmente e atualizada sempre que novas medidas de segurança forem implementadas ou vulnerabilidades forem descobertas.

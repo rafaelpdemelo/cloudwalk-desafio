@@ -61,7 +61,7 @@ graph TB
         end
         
         subgraph "Storage Layer"
-            PV[PersistentVolume<br/>Encrypted Files]
+            PV[EmptyDir<br/>Encrypted Files<br/>(Demo Storage)]
         end
         
         subgraph "GitOps Layer"
@@ -94,9 +94,20 @@ graph TB
 
 ### 🔄 Fluxo de Dados
 
-1. **Upload**: React → Nginx Proxy → Node.js API → Criptografia AES-256 → PersistentVolume
+1. **Upload**: React → Nginx Proxy → Node.js API → Criptografia AES-256 → EmptyDir (Para a Demo)
 2. **Download**: Link único → Validação senha → Descriptografia → Stream do arquivo
 3. **GitOps**: GitHub push → ArgoCD detect → Kubernetes sync → Rolling update
+
+### 💾 Storage Strategy (Demo)
+
+Para esta demonstração, utilizamos **EmptyDir** como solução de storage temporário:
+
+- ✅ **Funcional**: Permite upload/download completo durante a demo
+- ✅ **Simples**: Não requer configuração de storage persistente
+- ✅ **Seguro**: Arquivos criptografados mesmo em storage temporário
+- ⚠️ **Temporário**: Dados são perdidos quando o pod é reiniciado
+
+> **Produção**: Em ambiente produtivo, recomenda-se usar PersistentVolumes com storage classes adequados (SSD, backup automático, etc.)
 
 ### 📦 Componentes
 
@@ -225,9 +236,6 @@ Para confirmar a destruição, digite `y` quando solicitado.
 
 # 2. Fazer login local
 docker login
-
-# 3. Verificar se está logado
-docker info | grep Username
 ```
 
 **Se o setup pausar por problema do Docker, configure conforme as instruções exibidas e execute `./setup.sh` novamente.**
@@ -315,7 +323,7 @@ desafio/
     │   ├── services/              # Services
     │   ├── ingress/               # Ingress rules
     │   ├── security/              # RBAC + Network Policies
-    │   ├── storage/               # PersistentVolumes
+    │   ├── storage/               # EmptyDir (Apenas para a demo)
     │   └── namespace/             # Namespaces
     │
     ├── 🔄 argocd/                 # GitOps configuration
@@ -345,6 +353,8 @@ desafio/
 2. Digite senha correta
 3. Arquivo é descriptografado automaticamente
 4. Download inicia imediatamente
+
+> **⚠️ Nota da Demo**: Os arquivos são armazenados em EmptyDir (storage temporário). Arquivos serão perdidos se o pod for reiniciado. Ideal para demonstração e testes.
 
 ### 🔍 Logs de Auditoria
 
@@ -503,7 +513,7 @@ kubectl patch app file-sharing-app -n argocd --type merge -p '{"operation":{"syn
 
 <div align="center">
 
-**🚀 Desenvolvido com ❤️ para o Desafio CloudWalk**
+**🚀 Desenvolvido para o Desafio CloudWalk**
 
 ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=flat&logo=kubernetes&logoColor=white)
 ![GitOps](https://img.shields.io/badge/GitOps-ArgoCD-blue?style=flat&logo=argo&logoColor=white)
