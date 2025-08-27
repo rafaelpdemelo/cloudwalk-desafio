@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Security meta tags (headers configurados no Nginx) -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  
+  <!-- SEO and description -->
+  <meta name="description" content="Compartilhamento seguro de arquivos com criptografia end-to-end">
+  <meta name="keywords" content="file sharing, security, encryption, secure upload">
+  <meta name="author" content="CloudWalk Challenge">
+  
+  <!-- Disable unnecessary features -->
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>Secure File Share - CloudWalk</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/assets/fonts/main.woff2" as="font" type="font/woff2" crossorigin>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <link rel="alternate icon" href="/assets/favicon.ico" />
+  
+  <!-- Styles -->
+  <style>
+    /* Critical CSS inlined for performance */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #root {
+      width: 100%;
+      min-height: 100vh;
+    }
+    
+    .loading {
+      color: white;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    
+    /* Prevent text selection on sensitive areas */
+    .no-select {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading">
+      🔒 Carregando aplicação segura...
+    </div>
+  </div>
+  
+  <!-- Security: Disable right-click in production -->
+  <script>
+    if (window.location.hostname !== 'localhost') {
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('selectstart', e => e.preventDefault());
+      document.addEventListener('dragstart', e => e.preventDefault());
+    }
+  </script>
+  
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

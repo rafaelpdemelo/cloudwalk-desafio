@@ -1,0 +1,66 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: file-sharing-ingress
+  namespace: file-sharing
+  labels:
+    app.kubernetes.io/name: file-sharing
+    app.kubernetes.io/component: ingress
+  annotations:
+    # Configurações do Nginx Ingress Controller
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+    nginx.ingress.kubernetes.io/client-max-body-size: "50m"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/rate-limit-connections: "10"
+    nginx.ingress.kubernetes.io/rate-limit-requests-per-minute: "100"
+    
+    # CORS configuration básica
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
+    
+    # Timeout configurations
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "5"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - localhost
+    secretName: file-sharing-tls
+  
+  rules:
+  - http:
+      paths:
+      # API routes vão para o backend
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: file-sharing-backend
+            port:
+              number: 3000
+      
+      # Health check do backend
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: file-sharing-backend
+            port:
+              number: 3000
+      
+      # Todas as outras rotas vão para o frontend
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: file-sharing-frontend
+            port:
+              number: 3001

@@ -1,0 +1,168 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-sharing-backend
+  namespace: file-sharing
+  labels:
+    app: file-sharing-backend
+    app.kubernetes.io/name: file-sharing
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: file-sharing-backend
+  template:
+    metadata:
+      labels:
+        app: file-sharing-backend
+        app.kubernetes.io/name: file-sharing
+        app.kubernetes.io/component: backend
+      annotations:
+        # Força restart quando ConfigMap ou Secret mudarem
+        checksum/config: "placeholder"
+    spec:
+      serviceAccountName: file-sharing-backend
+      automountServiceAccountToken: false
+      
+      # Security Context no nível do Pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: "OnRootMismatch"
+        seccompProfile:
+          type: RuntimeDefault
+        supplementalGroups: [1001]
+      
+
+      containers:
+      - name: backend
+        image: rafaelpdemelo/desafiofilesharing-backend:latest
+        imagePullPolicy: Always  # Pull do DockerHub
+        
+        # Security Context no nível do Container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: UPLOAD_PATH
+          value: "/app/uploads"
+        - name: LOG_DIR
+          value: "/app/logs"
+        - name: MAX_FILE_SIZE
+          value: "52428800"  # 50MB
+        - name: DEFAULT_TTL
+          value: "86400000"  # 24 horas
+        - name: CORS_ORIGINS
+          value: "https://file-sharing.local"
+        
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Probes de saúde
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+          successThreshold: 1
+        
+        startupProbe:
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+          successThreshold: 1
+        
+        volumeMounts:
+        - name: uploads-storage
+          mountPath: /app/uploads
+        - name: logs-storage
+          mountPath: /app/logs
+        - name: tmp-dir
+          mountPath: /tmp
+        - name: var-tmp
+          mountPath: /var/tmp
+      
+      volumes:
+      - name: uploads-storage
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: logs-storage
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: tmp-dir
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: var-tmp
+        emptyDir:
+          sizeLimit: 1Gi
+      
+      # Configurações de segurança adicionais
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      
+      # Anti-affinity para distribuir pods
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - file-sharing-backend
+              topologyKey: kubernetes.io/hostname

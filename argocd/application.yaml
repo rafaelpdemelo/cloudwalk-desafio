@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: file-sharing-app
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: file-sharing
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/rafaelpdemelo/cloudwalk-desafio
+    targetRevision: HEAD
+    path: k8s
+    # Comentário: Repositório deve estar público ou configurado com credenciais
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: file-sharing
+    
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # Health checks customizados
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas
+  
+  # Configuração de refresh
+  revisionHistoryLimit: 10
