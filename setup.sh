@@ -328,8 +328,13 @@ show_access_info() {
     echo -e "   📊 Dashboard K8s: ${YELLOW}minikube dashboard${NC}"
     echo -e "   🔍 Ver pods: ${YELLOW}kubectl get pods -n $NAMESPACE${NC}"
     echo -e "   📋 Ver logs: ${YELLOW}kubectl logs -f deployment/file-sharing-backend -n $NAMESPACE${NC}"
+    echo -e "   🔄 GitOps Status: ${YELLOW}kubectl get applications -n argocd${NC}"
     
-    echo -e "\n${GREEN}🎉 Tudo configurado automaticamente! Não precisa fazer mais nada!${NC}"
+    echo -e "\n${BLUE}📚 Repositório GitHub:${NC}"
+    echo -e "   🌐 ${YELLOW}https://github.com/rafaelpdemelo/cloudwalk-desafio${NC}"
+    echo -e "   📋 ArgoCD sincronizado automaticamente com o repositório"
+    
+    echo -e "\n${GREEN}🎉 Tudo configurado automaticamente! GitOps funcionando!${NC}"
 }
 
 # Função principal

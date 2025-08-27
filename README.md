@@ -45,6 +45,10 @@ Aplicação segura de compartilhamento de arquivos com criptografia end-to-end, 
 - **🌐 Aplicação**: http://localhost:8080
 - **📊 ArgoCD**: https://localhost:8443 (usuário: admin)
 
+### 📚 Repositório GitHub:
+- **🌐 URL**: https://github.com/rafaelpdemelo/cloudwalk-desafio
+- **🔄 GitOps**: ArgoCD sincronizado automaticamente
+
 ### 🧹 Limpeza:
 
 ```bash
