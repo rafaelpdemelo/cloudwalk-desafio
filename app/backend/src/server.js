@@ -136,7 +136,7 @@ app.get('/health', (req, res) => {
 });
 
 // Rotas da API
-app.post('/api/upload', uploadController.uploadFile);
+app.post('/api/upload', uploadController.uploadFile.bind(uploadController));
 app.get('/api/download/:token', downloadController.getFileInfo);
 app.post('/api/download/:token', downloadController.downloadFile);
 
