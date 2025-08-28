@@ -330,25 +330,5 @@ kubectl logs -n ingress-nginx deployment/ingress-nginx-controller
 3. **Sync** automático
 4. **Deploy** no cluster
 
-### Branches
-- **main**: Produção
-- **develop**: Desenvolvimento
-
-## 📝 Licença
 
 Este projeto é parte do desafio técnico da CloudWalk.
-
-## 👥 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
-
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-- Abra uma issue no GitHub
-- Consulte a documentação
-- Execute `make troubleshoot`

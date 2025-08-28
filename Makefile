@@ -31,16 +31,6 @@ cleanup: ## Remove completamente o ambiente
 	@chmod +x scripts/cleanup.sh
 	@./scripts/cleanup.sh
 
-deploy: ## Deploy da aplicação via ArgoCD
-	@echo "$(BLUE)📦 Fazendo deploy da aplicação...$(NC)"
-	@chmod +x scripts/deploy.sh
-	@./scripts/deploy.sh
-
-undeploy: ## Remove a aplicação do cluster
-	@echo "$(YELLOW)🗑️  Removendo aplicação...$(NC)"
-	@chmod +x scripts/undeploy.sh
-	@./scripts/undeploy.sh
-
 status: ## Verifica status do cluster e aplicações
 	@echo "$(BLUE)📊 Verificando status...$(NC)"
 	@chmod +x scripts/status.sh
@@ -61,53 +51,10 @@ stop-port-forwards: ## Para todos os port-forwards
 	@chmod +x scripts/stop-port-forwards.sh
 	@./scripts/stop-port-forwards.sh
 
-test-ddos: ## Executa teste de proteção DDOS
-	@echo "$(RED)🛡️  Testando proteção DDOS...$(NC)"
-	@chmod +x scripts/test-ddos.sh
-	@./scripts/test-ddos.sh
-
-security-scan: ## Executa scan de segurança
-	@echo "$(RED)🔍 Executando scan de segurança...$(NC)"
-	@chmod +x scripts/security-scan.sh
-	@./scripts/security-scan.sh
-
-backup: ## Cria backup dos dados
-	@echo "$(BLUE)💾 Criando backup...$(NC)"
-	@chmod +x scripts/backup.sh
-	@./scripts/backup.sh
-
-restore: ## Restaura backup dos dados
-	@echo "$(BLUE)📥 Restaurando backup...$(NC)"
-	@chmod +x scripts/restore.sh
-	@./scripts/restore.sh
-
-# Comandos de desenvolvimento
-dev-setup: ## Setup para desenvolvimento local
-	@echo "$(BLUE)🛠️  Setup para desenvolvimento...$(NC)"
-	@chmod +x scripts/dev-setup.sh
-	@./scripts/dev-setup.sh
-
 build-images: ## Constrói e faz push das imagens Docker
 	@echo "$(BLUE)🐳 Construindo e fazendo push das imagens Docker...$(NC)"
 	@chmod +x scripts/build-images.sh
 	@./scripts/build-images.sh
-
-push-images: ## Faz push das imagens para DockerHub
-	@echo "$(BLUE)📤 Fazendo push das imagens...$(NC)"
-	@chmod +x scripts/push-images.sh
-	@./scripts/push-images.sh
-
-# Comandos de monitoramento
-monitor: ## Inicia monitoramento do cluster
-	@echo "$(BLUE)📈 Iniciando monitoramento...$(NC)"
-	@chmod +x scripts/monitor.sh
-	@./scripts/monitor.sh
-
-# Comandos de troubleshooting
-troubleshoot: ## Executa diagnóstico do cluster
-	@echo "$(YELLOW)🔧 Executando diagnóstico...$(NC)"
-	@chmod +x scripts/troubleshoot.sh
-	@./scripts/troubleshoot.sh
 
 # Comandos de certificados
 generate-certs: ## Gera certificados self-signed
