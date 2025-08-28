@@ -1,0 +1,19 @@
+{{- if and .Values.storage.enabled .Values.storage.persistentVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "file-sharing-app.fullname" . }}-uploads-pvc
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "file-sharing-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - {{ .Values.storage.persistentVolume.accessMode }}
+  {{- if .Values.storage.persistentVolume.storageClass }}
+  storageClassName: {{ .Values.storage.persistentVolume.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.persistentVolume.size }}
+{{- end }}

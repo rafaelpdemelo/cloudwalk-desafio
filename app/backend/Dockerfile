@@ -1,41 +1,39 @@
-# Usando imagem Node.js oficial com Alpine para menor superfície de ataque
+# Backend Dockerfile - Rootless
 FROM node:18-alpine
 
-# Criando usuário não-root para execução da aplicação
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+# Instalar dumb-init para melhor signal handling
+RUN apk add --no-cache dumb-init
 
-# Definindo diretório de trabalho
+# Criar usuário não-root com IDs únicos
+RUN addgroup -g 1003 -S nodejs && \
+    adduser -S -u 1003 -G nodejs nodejs
+
+# Definir diretório de trabalho
 WORKDIR /app
 
-# Copiando apenas package.json e package-lock.json primeiro (cache de layers)
+# Copiar arquivos de dependências
 COPY package*.json ./
 
-# Instalando dependências de produção apenas
-RUN npm ci --omit=dev && \
-    npm cache clean --force
+# Instalar dependências
+RUN npm ci --only=production && npm cache clean --force
 
-# Copiando código da aplicação
+# Copiar código fonte
 COPY src/ ./src/
 
-# Criando diretórios necessários com permissões seguras
-RUN mkdir -p /app/uploads /app/logs && \
-    chown -R nextjs:nodejs /app && \
-    chmod -R 755 /app && \
-    chmod 775 /app/uploads /app/logs
-
-# Removendo ferramentas desnecessárias para reduzir superfície de ataque
-RUN apk del --purge
+# Criar diretório de uploads com permissões corretas
+RUN mkdir -p /app/uploads && \
+    chown -R nodejs:nodejs /app
 
 # Mudando para usuário não-root
-USER nextjs
+USER nodejs
 
-# Expondo porta da aplicação
+# Expondo porta
 EXPOSE 3000
 
-# Health check para verificar se a aplicação está funcionando
+# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node src/healthcheck.js
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Comando para iniciar a aplicação
-CMD ["npm", "start"]
+# Comando de inicialização
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "src/server.js"]

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: file-sharing-app
+description: Aplicação de compartilhamento de arquivos segura
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - file-sharing
+  - security
+  - kubernetes
+home: https://github.com/rafaelpdemelo/cloudwalk-desafio
+sources:
+  - https://github.com/rafaelpdemelo/cloudwalk-desafio
+maintainers:
+  - name: Rafael P. de Melo
+    email: rafael@example.com

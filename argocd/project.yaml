@@ -1,0 +1,325 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: file-sharing-project
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: file-sharing
+    app.kubernetes.io/part-of: cloudwalk-desafio
+spec:
+  description: Projeto específico para a aplicação de compartilhamento de arquivos
+  
+  # Configurações de segurança - apenas recursos permitidos
+  sourceRepos:
+    - https://github.com/rafaelpdemelo/cloudwalk-desafio
+  
+  # Destinos permitidos - apenas o namespace da aplicação
+  destinations:
+    - namespace: file-sharing
+      server: https://kubernetes.default.svc
+  
+  # Recursos permitidos - lista restritiva por segurança
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: ""
+      kind: PersistentVolume
+    - group: ""
+      kind: PersistentVolumeClaim
+    - group: storage.k8s.io
+      kind: StorageClass
+  
+  # Recursos de namespace permitidos
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Secret
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: ""
+      kind: PersistentVolumeClaim
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: policy
+      kind: PodDisruptionBudget
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+  
+  # Recursos negados por segurança
+  clusterResourceBlacklist:
+    - group: ""
+      kind: Node
+    - group: ""
+      kind: PersistentVolume
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+  
+  # Recursos de namespace negados
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: Pod
+    - group: ""
+      kind: Event
+    - group: ""
+      kind: Endpoints
+    - group: ""
+      kind: EndpointSlice
+    - group: ""
+      kind: Node
+    - group: ""
+      kind: ReplicationController
+    - group: ""
+      kind: ReplicaSet
+    - group: ""
+      kind: PodTemplate
+    - group: ""
+      kind: LimitRange
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: PriorityClass
+    - group: ""
+      kind: Priority
+    - group: ""
+      kind: ComponentStatus
+    - group: ""
+      kind: Binding
+    - group: ""
+      kind: Event
+    - group: ""
+      kind: PodLog
+    - group: ""
+      kind: PodExecOptions
+    - group: ""
+      kind: PodAttachOptions
+    - group: ""
+      kind: PodPortForwardOptions
+    - group: ""
+      kind: PodProxyOptions
+    - group: ""
+      kind: NodeProxyOptions
+    - group: ""
+      kind: ServiceProxyOptions
+    - group: ""
+      kind: ExecAction
+    - group: ""
+      kind: HTTPGetAction
+    - group: ""
+      kind: TCPSocketAction
+    - group: ""
+      kind: HTTPHeader
+    - group: ""
+      kind: ObjectMeta
+    - group: ""
+      kind: TypeMeta
+    - group: ""
+      kind: Status
+    - group: ""
+      kind: APIGroup
+    - group: ""
+      kind: APIGroupList
+    - group: ""
+      kind: APIResourceList
+    - group: ""
+      kind: APIVersions
+    - group: ""
+      kind: DeleteOptions
+    - group: ""
+      kind: ExportOptions
+    - group: ""
+      kind: GetOptions
+    - group: ""
+      kind: ListOptions
+    - group: ""
+      kind: PatchOptions
+    - group: ""
+      kind: UpdateOptions
+    - group: ""
+      kind: WatchEvent
+    - group: ""
+      kind: GroupVersion
+    - group: ""
+      kind: GroupVersionForDiscovery
+    - group: ""
+      kind: ServerAddressByClientCIDR
+    - group: ""
+      kind: RootPaths
+    - group: ""
+      kind: Preconditions
+    - group: ""
+      kind: Initializers
+    - group: ""
+      kind: StatusCause
+    - group: ""
+      kind: StatusDetails
+    - group: ""
+      kind: LabelSelector
+    - group: ""
+      kind: LabelSelectorRequirement
+    - group: ""
+      kind: ListMeta
+    - group: ""
+      kind: OwnerReference
+    - group: ""
+      kind: Time
+    - group: ""
+      kind: MicroTime
+    - group: ""
+      kind: Duration
+    - group: ""
+      kind: Fields
+    - group: ""
+      kind: FieldsV1
+    - group: ""
+      kind: ObjectReference
+    - group: ""
+      kind: LocalObjectReference
+    - group: ""
+      kind: ObjectFieldSelector
+    - group: ""
+      kind: ResourceFieldSelector
+    - group: ""
+      kind: EnvVar
+    - group: ""
+      kind: EnvVarSource
+    - group: ""
+      kind: ConfigMapKeySelector
+    - group: ""
+      kind: SecretKeySelector
+    - group: ""
+      kind: ObjectMeta
+    - group: ""
+      kind: TypeMeta
+    - group: ""
+      kind: Status
+    - group: ""
+      kind: APIGroup
+    - group: ""
+      kind: APIGroupList
+    - group: ""
+      kind: APIResourceList
+    - group: ""
+      kind: APIVersions
+    - group: ""
+      kind: DeleteOptions
+    - group: ""
+      kind: ExportOptions
+    - group: ""
+      kind: GetOptions
+    - group: ""
+      kind: ListOptions
+    - group: ""
+      kind: PatchOptions
+    - group: ""
+      kind: UpdateOptions
+    - group: ""
+      kind: WatchEvent
+    - group: ""
+      kind: GroupVersion
+    - group: ""
+      kind: GroupVersionForDiscovery
+    - group: ""
+      kind: ServerAddressByClientCIDR
+    - group: ""
+      kind: RootPaths
+    - group: ""
+      kind: Preconditions
+    - group: ""
+      kind: Initializers
+    - group: ""
+      kind: StatusCause
+    - group: ""
+      kind: StatusDetails
+    - group: ""
+      kind: LabelSelector
+    - group: ""
+      kind: LabelSelectorRequirement
+    - group: ""
+      kind: ListMeta
+    - group: ""
+      kind: OwnerReference
+    - group: ""
+      kind: Time
+    - group: ""
+      kind: MicroTime
+    - group: ""
+      kind: Duration
+    - group: ""
+      kind: Fields
+    - group: ""
+      kind: FieldsV1
+    - group: ""
+      kind: ObjectReference
+    - group: ""
+      kind: LocalObjectReference
+    - group: ""
+      kind: ObjectFieldSelector
+    - group: ""
+      kind: ResourceFieldSelector
+    - group: ""
+      kind: EnvVar
+    - group: ""
+      kind: EnvVarSource
+    - group: ""
+      kind: ConfigMapKeySelector
+    - group: ""
+      kind: SecretKeySelector
+  
+  # Orphaned resources - não permitir recursos órfãos
+  orphanedResources:
+    warn: false
+  
+  # Sync windows - não permitir sync em horários específicos
+  syncWindows:
+    - kind: deny
+      schedule: "0 0 * * *"  # Meia-noite
+      duration: "1h"
+      applications:
+        - "*"
+      namespaces:
+        - "*"
+      clusters:
+        - "*"
+      manualSync: false
+  
+  # Roles para controle de acesso
+  roles:
+    - name: file-sharing-admin
+      description: Administrador da aplicação
+      policies:
+        - p, proj:file-sharing-project:file-sharing-admin, applications, *, file-sharing-project/file-sharing-app, allow
+        - p, proj:file-sharing-project:file-sharing-admin, repositories, *, file-sharing-project/*, allow
+        - p, proj:file-sharing-project:file-sharing-admin, clusters, *, file-sharing-project/*, allow
+      groups:
+        - file-sharing-admins
+    
+    - name: file-sharing-developer
+      description: Desenvolvedor da aplicação
+      policies:
+        - p, proj:file-sharing-project:file-sharing-developer, applications, get, file-sharing-project/file-sharing-app, allow
+        - p, proj:file-sharing-project:file-sharing-developer, applications, sync, file-sharing-project/file-sharing-app, allow
+        - p, proj:file-sharing-project:file-sharing-developer, applications, action/*, file-sharing-project/file-sharing-app, allow
+      groups:
+        - file-sharing-developers
+    
+    - name: file-sharing-viewer
+      description: Visualizador da aplicação
+      policies:
+        - p, proj:file-sharing-project:file-sharing-viewer, applications, get, file-sharing-project/file-sharing-app, allow
+      groups:
+        - file-sharing-viewers

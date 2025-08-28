@@ -80,12 +80,12 @@ Thumbs.db
 *.csr
 *.srl
 *.ext
-!certs/example.*
-certs/*.key
-certs/*.crt
-certs/*.csr
-certs/*.srl
-certs/*.ext
+!scripts/certs/example.*
+scripts/certs/*.key
+scripts/certs/*.crt
+scripts/certs/*.csr
+scripts/certs/*.srl
+scripts/certs/*.ext
 
 # Docker
 .dockerignore
