@@ -7,6 +7,7 @@ Este diretório contém **22 scripts automatizados** para testar a segurança da
 ### Executar Todos os Testes
 ```bash
 cd cloudwalk-app/scripts
+bash create-all-test-scripts.sh
 bash run-all-security-tests.sh
 ```
 

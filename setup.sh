@@ -368,6 +368,11 @@ apply_app_manifests() {
     kubectl apply -f k8s/services/
     kubectl apply -f k8s/ingress/
     
+    # Configurar Ingress para funcionar com proxy HTTPS local
+    show_status "Configurando Ingress para proxy HTTPS local..."
+    kubectl patch ingress file-sharing-ingress -n file-sharing -p '{"spec":{"tls":null}}' 2>/dev/null || true
+    kubectl patch ingress file-sharing-ingress -n file-sharing -p '{"metadata":{"annotations":{"nginx.ingress.kubernetes.io/force-ssl-redirect":"false"}}}' 2>/dev/null || true
+    
     show_success "Aplicação deployada"
 }
 
@@ -433,7 +438,7 @@ show_private_repo_instructions() {
     echo -e "   Status deve mostrar: ${GREEN}Synced + Healthy${NC}\n"
     
     echo -e "${RED}⚠️  SETUP PAUSADO - Configure o repositório privado antes de continuar${NC}"
-    echo -e "${BLUE}💡 Após configurar, a aplicação estará disponível em: http://localhost:8080${NC}\n"
+    echo -e "${BLUE}💡 Após configurar, a aplicação estará disponível em: https://localhost:8080${NC}\n"
 }
 
 # Instalar ArgoCD
@@ -496,41 +501,90 @@ health_check() {
 }
 
 # Iniciar port-forward automático para acesso fácil
-start_port_forward() {
-    show_status "Configurando acesso automático via port-forward..."
+start_https_proxy() {
+    echo -e "${BLUE}🔐 Configurando proxy HTTPS com certificado self-signed...${NC}"
     
-    # Matar qualquer port-forward existente
-    pkill -f "kubectl port-forward.*file-sharing-frontend" 2>/dev/null || true
-    pkill -f "kubectl port-forward.*argocd-server" 2>/dev/null || true
+    # Verificar se os certificados existem
+    if [ ! -f "certs/server.crt" ] || [ ! -f "certs/server.key" ]; then
+        echo -e "${RED}❌ Certificados não encontrados.${NC}"
+        return 1
+    fi
     
-    # Aguardar um pouco
-    sleep 2
+    # Copiar certificados para /tmp
+    cp certs/server.crt /tmp/
+    cp certs/server.key /tmp/
     
-    # Iniciar port-forward para a aplicação em background
-    kubectl port-forward svc/file-sharing-frontend -n $NAMESPACE 8080:3001 >/dev/null 2>&1 &
-    local app_pid=$!
+    # Criar script de proxy Node.js melhorado
+    cat > /tmp/https-proxy.js << 'PROXY_EOF'
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('/tmp/server.key'),
+  cert: fs.readFileSync('/tmp/server.crt')
+};
+
+const server = https.createServer(options, (req, res) => {
+  console.log(`📥 ${req.method} ${req.url}`);
+  
+  const proxyReq = http.request({
+    hostname: 'localhost',
+    port: 8081,
+    path: req.url,
+    method: req.method,
+    headers: {
+      ...req.headers,
+      'host': 'localhost:8081'
+    }
+  }, (proxyRes) => {
+    console.log(`📤 ${proxyRes.statusCode} ${req.url}`);
     
-    # Iniciar port-forward para ArgoCD em background  
-    kubectl port-forward svc/argocd-server -n argocd 8443:443 >/dev/null 2>&1 &
-    local argocd_pid=$!
+    // Copiar headers
+    Object.keys(proxyRes.headers).forEach(key => {
+      res.setHeader(key, proxyRes.headers[key]);
+    });
     
-    # Aguardar port-forwards estarem ativos
+    res.writeHead(proxyRes.statusCode);
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on('error', (err) => {
+    console.error(`❌ Proxy error: ${err.message}`);
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Proxy Error: ' + err.message);
+  });
+
+  req.pipe(proxyReq);
+});
+
+server.listen(8080, () => {
+  console.log('🔐 HTTPS Proxy running on https://localhost:8080');
+  console.log('📜 Using self-signed certificate from setup.sh');
+  console.log('🎯 Certificate: CN=file-sharing.local, O=CloudWalk');
+});
+PROXY_EOF
+    
+    # Parar proxies anteriores se existirem
+    pkill -f "node /tmp/https-proxy" 2>/dev/null || true
+    pkill -f "kubectl port-forward.*8081:80" 2>/dev/null || true
+    pkill -f "kubectl port-forward.*8443:443" 2>/dev/null || true
+    
+    # Iniciar port-forward HTTP
+    echo -e "${BLUE}🔌 Iniciando port-forward HTTP...${NC}"
+    kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8081:80 > /dev/null 2>&1 &
     sleep 5
     
-    # Verificar se port-forwards estão funcionando
-    if curl -s http://localhost:8080 >/dev/null 2>&1; then
-        show_success "Port-forward da aplicação ativo na porta 8080"
-        echo "$app_pid" > /tmp/file-sharing-app.pid
-    else
-        show_error "Port-forward da aplicação falhou"
-    fi
+    # Iniciar port-forward ArgoCD
+    echo -e "${BLUE}📊 Iniciando port-forward ArgoCD...${NC}"
+    kubectl port-forward -n argocd svc/argocd-server 8443:443 > /dev/null 2>&1 &
+    sleep 3
     
-    if curl -k -s https://localhost:8443 >/dev/null 2>&1; then
-        show_success "Port-forward do ArgoCD ativo na porta 8443"
-        echo "$argocd_pid" > /tmp/argocd.pid
-    else
-        show_error "Port-forward do ArgoCD falhou"
-    fi
+    # Iniciar proxy HTTPS
+    echo -e "${BLUE}🚀 Iniciando proxy HTTPS...${NC}"
+    node /tmp/https-proxy.js > /dev/null 2>&1 &
+    
+    echo -e "${GREEN}✅ Proxy HTTPS e ArgoCD iniciados!${NC}"
 }
 
 # Mostrar informações de acesso
@@ -542,7 +596,7 @@ show_access_info() {
     echo -e "${GREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
     
     echo -e "\n${BLUE}🌐 APLICAÇÃO PRINCIPAL:${NC}"
-    echo -e "   ${GREEN}✅ ATIVA e FUNCIONANDO em: ${YELLOW}http://localhost:8080${NC}"
+    echo -e "   ${GREEN}✅ ATIVA e FUNCIONANDO em: ${YELLOW}https://localhost:8080${NC}"
     echo -e "   ${GREEN}👆 Abra este link no seu navegador AGORA!${NC}"
     echo ""
     
@@ -598,10 +652,10 @@ main() {
     configure_access
     wait_for_pods
     health_check
-    start_port_forward
+    start_https_proxy
     show_access_info
     
-    echo -e "\n${GREEN}🎯 APLICAÇÃO TOTALMENTE FUNCIONAL! Acesse http://localhost:8080 no navegador!${NC}"
+    echo -e "\n${GREEN}🎯 APLICAÇÃO TOTALMENTE FUNCIONAL! Acesse https://localhost:8080 no navegador!${NC}"
 }
 
 # Tratamento de erro

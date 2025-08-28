@@ -1,14 +1,20 @@
 #!/bin/bash
 
-# Script para parar port-forwards da aplicação
+# Script para parar todos os port-forwards
 
-echo "🛑 Parando port-forwards..."
+echo "🛑 Parando todos os port-forwards..."
 
-# Matar port-forwards específicos
-pkill -f "kubectl port-forward.*file-sharing-frontend" 2>/dev/null && echo "✅ Port-forward da aplicação parado"
-pkill -f "kubectl port-forward.*argocd-server" 2>/dev/null && echo "✅ Port-forward do ArgoCD parado"
+# Parar proxy HTTPS
+pkill -f "node /tmp/https-proxy" 2>/dev/null || true
 
-# Remover arquivos de PID
-rm -f /tmp/file-sharing-app.pid /tmp/argocd.pid 2>/dev/null
+# Parar port-forward HTTP
+pkill -f "kubectl port-forward.*8081:80" 2>/dev/null || true
 
-echo "✅ Todos os port-forwards foram parados"
+# Parar port-forward ArgoCD
+pkill -f "kubectl port-forward.*8443:443" 2>/dev/null || true
+
+# Limpar arquivos temporários
+rm -f /tmp/https-proxy.js /tmp/server.crt /tmp/server.key 2>/dev/null || true
+
+echo "✅ Todos os port-forwards parados!"
+echo "🧹 Arquivos temporários limpos!"

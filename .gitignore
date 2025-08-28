@@ -78,7 +78,14 @@ Thumbs.db
 *.key
 *.crt
 *.csr
+*.srl
+*.ext
 !certs/example.*
+certs/*.key
+certs/*.crt
+certs/*.csr
+certs/*.srl
+certs/*.ext
 
 # Docker
 .dockerignore
