@@ -113,7 +113,7 @@ backend:
     NODE_ENV: production
     PORT: 3000
     UPLOAD_DIR: /app/uploads
-    MAX_FILE_SIZE: 100mb
+    MAX_FILE_SIZE: 50mb
     ALLOWED_FILE_TYPES: "jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar"
 
 # Configurações do proxy/nginx

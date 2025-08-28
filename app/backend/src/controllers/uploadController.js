@@ -49,7 +49,7 @@ class UploadController {
       upload(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
           if (err.code === 'LIMIT_FILE_SIZE') {
-            return next(new AppError('Arquivo muito grande. Máximo: 100MB', 400));
+            return next(new AppError('Arquivo muito grande. Máximo: 50MB', 400));
           }
           return next(new AppError(`Erro no upload: ${err.message}`, 400));
         } else if (err) {

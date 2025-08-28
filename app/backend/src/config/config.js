@@ -1,5 +1,28 @@
 const path = require('path');
 
+// Função para converter strings de tamanho (ex: "50mb", "1gb") para bytes
+function parseSize(sizeStr) {
+  if (!sizeStr) return null;
+  
+  const str = sizeStr.toString().toLowerCase().trim();
+  const match = str.match(/^(\d+(?:\.\d+)?)\s*(b|kb|mb|gb|tb)?$/);
+  
+  if (!match) return null;
+  
+  const value = parseFloat(match[1]);
+  const unit = match[2] || 'b';
+  
+  const multipliers = {
+    'b': 1,
+    'kb': 1024,
+    'mb': 1024 * 1024,
+    'gb': 1024 * 1024 * 1024,
+    'tb': 1024 * 1024 * 1024 * 1024
+  };
+  
+  return Math.floor(value * multipliers[unit]);
+}
+
 module.exports = {
   // Configurações de porta e ambiente
   port: process.env.PORT || 3000,
@@ -7,7 +30,7 @@ module.exports = {
   
   // Configurações de upload
   upload: {
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 100 * 1024 * 1024, // 100MB
+    maxFileSize: parseSize(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024, // 50MB
     allowedMimeTypes: [
       'image/jpeg',
       'image/png',
