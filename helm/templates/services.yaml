@@ -40,24 +40,3 @@ spec:
     app.kubernetes.io/component: backend
 ---
 {{- end }}
-{{- if .Values.proxy.enabled }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "file-sharing-app.fullname" . }}-proxy
-  namespace: {{ .Values.namespace.name }}
-  labels:
-    {{- include "file-sharing-app.labels" . | nindent 4 }}
-    app.kubernetes.io/component: proxy
-spec:
-  type: {{ .Values.proxy.service.type }}
-  ports:
-    - port: {{ .Values.proxy.service.port }}
-      targetPort: {{ .Values.proxy.service.targetPort }}
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "file-sharing-app.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: proxy
----
-{{- end }}

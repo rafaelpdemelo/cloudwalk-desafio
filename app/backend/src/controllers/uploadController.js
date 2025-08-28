@@ -152,12 +152,12 @@ class UploadController {
         data: {
           token,
           downloadUrl: (() => {
-            // Se BASE_URL estiver configurada, usar ela (produção)
+            // Se BASE_URL estiver configurada, usar ela (prioridade)
             if (config.baseUrl) {
               return `${config.baseUrl}/download/${token}`;
             }
             
-            // Detectar automaticamente baseado no host e headers
+            // Detectar automaticamente baseado no host e headers (fallback)
             const host = req.get('host');
             const protocol = req.get('x-forwarded-proto') || req.protocol;
             
