@@ -35,10 +35,15 @@ frontend:
         paths:
           - path: /
             pathType: Prefix
+      - host: localhost
+        paths:
+          - path: /
+            pathType: Prefix
     tls:
       - secretName: file-sharing-tls
         hosts:
           - file-sharing.local
+          - localhost
   resources:
     limits:
       cpu: 500m
