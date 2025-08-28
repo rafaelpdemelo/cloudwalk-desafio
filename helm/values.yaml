@@ -115,6 +115,7 @@ backend:
     UPLOAD_DIR: /app/uploads
     MAX_FILE_SIZE: 50mb
     ALLOWED_FILE_TYPES: "jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar"
+    BASE_URL: "https://file-sharing.local"
 
 # Configurações do proxy/nginx
 proxy:

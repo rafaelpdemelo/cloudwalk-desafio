@@ -151,7 +151,30 @@ class UploadController {
         success: true,
         data: {
           token,
-          downloadUrl: `${req.protocol}://${req.get('host').includes(':') ? req.get('host') : req.get('host') + ':8080'}/download/${token}`,
+          downloadUrl: (() => {
+            // Se BASE_URL estiver configurada, usar ela (produção)
+            if (config.baseUrl) {
+              return `${config.baseUrl}/download/${token}`;
+            }
+            
+            // Detectar automaticamente baseado no host e headers
+            const host = req.get('host');
+            const protocol = req.get('x-forwarded-proto') || req.protocol;
+            
+            // Para desenvolvimento local com port-forward
+            if (host && host.includes('localhost')) {
+              // Se a requisição vier do backend direto (localhost:3001)
+              // redirecionar para o frontend (localhost:3000)
+              if (host.includes(':3001')) {
+                return `${protocol}://localhost:3000/download/${token}`;
+              }
+              // Para outros casos localhost, usar como está
+              return `${protocol}://${host}/download/${token}`;
+            }
+            
+            // Para outros casos (proxy, ingress, etc), usar o host como está
+            return `${protocol}://${host}/download/${token}`;
+          })(),
           filename: sanitizedFilename,
           size: file.size,
           expiresAt: new Date(expiresAt).toISOString(),

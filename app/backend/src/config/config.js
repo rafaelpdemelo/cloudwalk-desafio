@@ -89,6 +89,9 @@ module.exports = {
 
   // URLs permitidas para CORS
   corsOrigins: (process.env.CORS_ORIGINS || 'https://localhost:3001').split(','),
+  
+  // URL base para downloads
+  baseUrl: process.env.BASE_URL || null, // Se null, usa req.protocol + req.host
 
   // Configurações de paths
   paths: {
