@@ -59,15 +59,6 @@ make status
 make port-forward
 ```
 
-### Deploy para Demo (sem persistência)
-
-```bash
-# Para demo simples sem persistência de dados
-helm install file-sharing-app ./helm -f helm/values-demo.yaml
-
-# ⚠️ Nota: Arquivos serão perdidos quando o pod for reiniciado
-```
-
 ## 📚 Documentação Completa
 
 ### 🏗️ [Arquitetura](docs/ARQUITETURA.md)
