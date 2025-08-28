@@ -224,6 +224,35 @@ setup_local_hosts() {
     fi
 }
 
+# Função para configurar certificado como padrão do Ingress Controller
+configure_ingress_default_cert() {
+    log "Configurando certificado CloudWalk como padrão do Ingress Controller..."
+    
+    # Aguardar Ingress Controller estar pronto
+    log "Aguardando Ingress Controller estar pronto..."
+    kubectl wait --for=condition=available --timeout=300s deployment/ingress-nginx-controller -n ingress-nginx
+    
+    # Criar secret do certificado no namespace ingress-nginx
+    log "Criando secret do certificado no namespace ingress-nginx..."
+    kubectl create secret tls cloudwalk-default-tls \
+        --cert="$PROJECT_ROOT/scripts/certs/tls.crt" \
+        --key="$PROJECT_ROOT/scripts/certs/tls.key" \
+        -n ingress-nginx \
+        --dry-run=client -o yaml | kubectl apply -f -
+    
+    # Configurar Ingress Controller para usar nosso certificado como padrão
+    log "Configurando Ingress Controller para usar certificado CloudWalk como padrão..."
+    kubectl patch deployment ingress-nginx-controller -n ingress-nginx \
+        --type='json' \
+        -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--default-ssl-certificate=ingress-nginx/cloudwalk-default-tls"}]'
+    
+    # Aguardar pod reiniciar
+    log "Aguardando Ingress Controller reiniciar..."
+    kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx --timeout=300s
+    
+    success "Certificado CloudWalk configurado como padrão do Ingress Controller"
+}
+
 # Função para verificar status final
 check_final_status() {
     log "Verificando status final..."
@@ -254,9 +283,8 @@ check_final_status() {
     echo "  Senha: $(kubectl -n "$ARGOCD_NAMESPACE" get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)"
     echo ""
     echo "🌐 ACESSO À APLICAÇÃO:"
-    echo "  Frontend: http://localhost:3000"
     echo "  Backend: http://localhost:3001"
-    echo "  Frontend (HTTPS): https://localhost:8443 (use Host: file-sharing.local)"
+    echo "  Frontend (HTTPS): https://localhost:8443 (certificado CloudWalk self-signed)"
     echo ""
     echo "[2025-08-28 18:13:34] Configurando port-forward automático..."
     
@@ -290,6 +318,7 @@ main() {
     configure_argocd
     generate_self_signed_certs
     setup_local_hosts
+    configure_ingress_default_cert
     check_final_status
 }
 

@@ -178,7 +178,7 @@ show_access_info() {
     echo "=== ACESSO À APLICAÇÃO ==="
     echo "🌐 Frontend: http://localhost:3000"
     echo "🔗 Backend API: http://localhost:3001"
-    echo "🔒 Frontend (HTTPS): https://localhost:8443 (use Host: file-sharing.local)"
+    echo "🔒 Frontend (HTTPS): https://localhost:8443 (certificado CloudWalk self-signed)"
     echo "📊 ArgoCD: https://localhost:8080"
     echo ""
     echo "=== CREDENCIAIS ARGOCD ==="
