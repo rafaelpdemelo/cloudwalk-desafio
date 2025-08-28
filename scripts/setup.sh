@@ -256,6 +256,7 @@ check_final_status() {
     echo "🌐 ACESSO À APLICAÇÃO:"
     echo "  Frontend: http://localhost:3000"
     echo "  Backend: http://localhost:3001"
+    echo "  Frontend (HTTPS): https://localhost:8443 (use Host: file-sharing.local)"
     echo ""
     echo "[2025-08-28 18:13:34] Configurando port-forward automático..."
     
@@ -269,6 +270,10 @@ check_final_status() {
     
     kubectl port-forward -n file-sharing svc/file-sharing-app-backend 3001:3000 > /dev/null 2>&1 &
     echo $! > /tmp/backend-port-forward.pid
+    
+    # Configurar port-forward para Ingress Controller (HTTPS com certificado)
+    kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8443:443 > /dev/null 2>&1 &
+    echo $! > /tmp/ingress-port-forward.pid
     
     echo "[SUCESSO] Port-forward configurado"
 }

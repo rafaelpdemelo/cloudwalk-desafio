@@ -87,8 +87,8 @@ dev-setup: ## Setup para desenvolvimento local
 	@chmod +x scripts/dev-setup.sh
 	@./scripts/dev-setup.sh
 
-build-images: ## Constrói as imagens Docker
-	@echo "$(BLUE)🐳 Construindo imagens Docker...$(NC)"
+build-images: ## Constrói e faz push das imagens Docker
+	@echo "$(BLUE)🐳 Construindo e fazendo push das imagens Docker...$(NC)"
 	@chmod +x scripts/build-images.sh
 	@./scripts/build-images.sh
 

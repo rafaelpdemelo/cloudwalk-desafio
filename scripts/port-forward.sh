@@ -142,6 +142,34 @@ setup_argocd_port_forward() {
     fi
 }
 
+# Função para configurar port-forward do Ingress Controller (HTTPS)
+setup_ingress_port_forward() {
+    log "Configurando port-forward do Ingress Controller (HTTPS)..."
+    
+    # Verificar se o namespace do ingress-nginx existe
+    if kubectl get namespace "ingress-nginx" &>/dev/null; then
+        # Configurar port-forward para o Ingress Controller (porta 8443)
+        log "Iniciando port-forward para Ingress Controller (localhost:8443)..."
+        kubectl port-forward -n "ingress-nginx" svc/ingress-nginx-controller 8443:443 &
+        INGRESS_PID=$!
+        
+        # Aguardar um pouco para o port-forward estar pronto
+        sleep 2
+        
+        # Verificar se o processo está rodando
+        if kill -0 $INGRESS_PID 2>/dev/null; then
+            success "Port-forward do Ingress Controller iniciado (PID: $INGRESS_PID)"
+        else
+            warning "Falha ao iniciar port-forward do Ingress Controller"
+        fi
+        
+        # Salvar PID em arquivo para referência futura
+        echo $INGRESS_PID > "$PROJECT_ROOT/scripts/.port-forward-ingress.pid"
+    else
+        warning "Namespace do ingress-nginx não encontrado"
+    fi
+}
+
 # Função para mostrar informações de acesso
 show_access_info() {
     log "Informações de acesso..."
@@ -150,6 +178,7 @@ show_access_info() {
     echo "=== ACESSO À APLICAÇÃO ==="
     echo "🌐 Frontend: http://localhost:3000"
     echo "🔗 Backend API: http://localhost:3001"
+    echo "🔒 Frontend (HTTPS): https://localhost:8443 (use Host: file-sharing.local)"
     echo "📊 ArgoCD: https://localhost:8080"
     echo ""
     echo "=== CREDENCIAIS ARGOCD ==="
@@ -168,6 +197,9 @@ show_access_info() {
     fi
     if [ -f "$PROJECT_ROOT/scripts/.port-forward-argocd.pid" ]; then
         echo "ArgoCD: $(cat "$PROJECT_ROOT/scripts/.port-forward-argocd.pid")"
+    fi
+    if [ -f "$PROJECT_ROOT/scripts/.port-forward-ingress.pid" ]; then
+        echo "Ingress: $(cat "$PROJECT_ROOT/scripts/.port-forward-ingress.pid")"
     fi
     echo ""
     echo "💡 Para parar os port-forwards: make stop-port-forwards"
@@ -211,6 +243,7 @@ main() {
     setup_app_port_forward
     setup_backend_port_forward
     setup_argocd_port_forward
+    setup_ingress_port_forward
     
     # Mostrar informações de acesso
     show_access_info
