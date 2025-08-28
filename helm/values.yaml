@@ -47,9 +47,9 @@ frontend:
       cpu: 100m
       memory: 128Mi
   hpa:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 10
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 80
   pdb:
@@ -86,9 +86,9 @@ backend:
       cpu: 200m
       memory: 256Mi
   hpa:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 10
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 80
   pdb:

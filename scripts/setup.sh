@@ -246,13 +246,31 @@ check_final_status() {
     echo "📋 PRÓXIMOS PASSOS:"
     echo "1. Aguarde o ArgoCD sincronizar a aplicação (pode levar alguns minutos)"
     echo "2. Execute: make status"
-    echo "3. Execute: make port-forward"
-    echo "4. Acesse: https://file-sharing.local"
+    echo "3. Acesse: https://file-sharing.local"
     echo ""
     echo "🔐 CREDENCIAIS ARGOCD:"
     echo "  URL: https://localhost:8080"
     echo "  Usuário: admin"
     echo "  Senha: $(kubectl -n "$ARGOCD_NAMESPACE" get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)"
+    echo ""
+    echo "🌐 ACESSO À APLICAÇÃO:"
+    echo "  Frontend: http://localhost:3000"
+    echo "  Backend: http://localhost:3001"
+    echo ""
+    echo "[2025-08-28 18:13:34] Configurando port-forward automático..."
+    
+    # Configurar port-forward para ArgoCD
+    kubectl port-forward -n argocd svc/argocd-server 8080:443 > /dev/null 2>&1 &
+    echo $! > /tmp/argocd-port-forward.pid
+    
+    # Configurar port-forward para aplicação
+    kubectl port-forward -n file-sharing svc/file-sharing-app-frontend 3000:80 > /dev/null 2>&1 &
+    echo $! > /tmp/frontend-port-forward.pid
+    
+    kubectl port-forward -n file-sharing svc/file-sharing-app-backend 3001:3000 > /dev/null 2>&1 &
+    echo $! > /tmp/backend-port-forward.pid
+    
+    echo "[SUCESSO] Port-forward configurado"
 }
 
 # Função principal
