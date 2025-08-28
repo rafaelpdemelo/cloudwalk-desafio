@@ -123,16 +123,6 @@ make cleanup
 - ✅ **Dados sobrevivem** a reinicializações
 - ✅ **Suporte a múltiplas réplicas**
 
-### **Configuração Demo (Sem Persistência)**
-- ⚠️ **emptyDir** para demonstrações simples
-- ❌ **Arquivos perdidos** quando pod reinicia
-- ❌ **Não funciona** com múltiplas réplicas
-- ✅ **Setup mais simples** para demo
-
-**Para usar demo sem persistência:**
-```bash
-helm install file-sharing-app ./helm -f helm/values-demo.yaml
-```
 
 ## 📊 Status do Projeto
 
