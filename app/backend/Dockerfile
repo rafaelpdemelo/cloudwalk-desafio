@@ -1,5 +1,5 @@
 # Backend Dockerfile - Rootless
-FROM node:18-alpine
+FROM node:18.20.4-alpine3.20
 
 # Instalar dumb-init para melhor signal handling
 RUN apk add --no-cache dumb-init

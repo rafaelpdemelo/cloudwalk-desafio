@@ -1,5 +1,5 @@
 # Frontend Dockerfile - Rootless
-FROM node:18-alpine AS builder
+FROM node:18.20.4-alpine3.20 AS builder
 
 # Instalar dumb-init para melhor signal handling
 RUN apk add --no-cache dumb-init
