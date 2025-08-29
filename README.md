@@ -108,9 +108,6 @@ make deploy
 make status
 make logs
 
-# Testes de segurança
-make test-sec
-
 # Limpeza
 make cleanup
 ```
